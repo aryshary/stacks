@@ -4,46 +4,46 @@
 
 using namespace std;
 
-int main()
-{
-    int n1{ 0 }, n2{ 0 }, n3{ 0 };
+int main() {
     string line;
     cin >> line;
-    stack <char> stack;
+    stack<char> stack;
+    int position = -1;
+
     for (int i = 0; i < line.length(); i++) {
         if (line[i] == ';') break;
-        else {
-            if (line[i] == '(' || line[i] == ')' || line[i] == '[' || line[i] == ']' || line[i] == '{' || line[i] == '}') {
-                stack.push(line[i]);
+        else if (line[i] == '(' || line[i] == '[' || line[i] == '{') {
+            stack.push(line[i]);
+        }
+        else if (line[i] == ')' || line[i] == ']' || line[i] == '}') {
+            if (stack.empty()) {
+                position = i;
+                break;
+            }
+            char top = stack.top();
+            if ((line[i] == ')' && top == '(') ||
+                (line[i] == ']' && top == '[') ||
+                (line[i] == '}' && top == '{')) {
+                stack.pop();
+            }
+            else {
+                position = i;
+                break;
             }
         }
     }
-    for (int i = 0; i < stack.size(); i++) {
-        if (stack.top() == ')' && n1 == 0) {
-            stack.pop();
-            n1++;
+
+    if (position != -1) {
+        cout << "incorrect at position " << position << " - ";
+        for (int i = 0; i <= position; i++) {
+            cout << line[i];
         }
-        else if (stack.top() == ']' && n2 == 0) {
-            stack.pop();
-            n2++;
-        }
-        else if (stack.top() == '}' && n3 == 0) {
-            stack.pop();
-            n3++;
-        }
-        else if (stack.top() == '(' && n1 == 1) {
-            stack.pop();
-            n1 = 0;
-        }
-        else if (stack.top() == '[' && n2 == 1) {
-            stack.pop();
-            n2 = 0;
-        }
-        else if (stack.top() == '{' && n3 == 1) {
-            stack.pop();
-            n3 = 0;
-        }
-        else cout << "incorrect - " << stack.top();
     }
-    if (n1 == 0 && n2 == 0 && n3 == 0) cout << "correct";
+    else if (!stack.empty()) {
+        position = line.find(stack.top());
+        cout << "incorrect at position " << position << " - unmatched brackets";
+    }
+    else {
+        cout << "correct";
+    }
 }
